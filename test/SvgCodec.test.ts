@@ -69,3 +69,36 @@ test("preserve imported presentation attributes from original background example
   assert.equal(next.find("t").content, "End &amp;");
   assert.equal(next.find("t").attributes()["font-size"], "16");
 });
+
+test("SVG scale normalizes inherited text size and stroke widths along with geometry", () => {
+  const d = codec.decode(
+    '<svg><g id="outer" font-size="20" stroke-width="4"><g id="inner" transform="scale(0.5)"><text id="t" x="10" y="20">标题</text><line id="l" x1="0" y1="0" x2="20" y2="30" stroke="black"/></g></g></svg>',
+  ).document;
+  assert.equal(d.find("t").attributes()["font-size"], "10");
+  assert.equal(d.find("t").attributes()["stroke-width"], "2");
+  assert.equal(d.find("l").attributes()["stroke-width"], "2");
+  assert.equal(d.find("t").attributes().x, "5");
+  assert.equal(
+    codec.encode(codec.decode(codec.encode(d)).document),
+    codec.encode(d),
+  );
+});
+test("nested SVG scales and translations preserve explicit and inherited presentation", () => {
+  const d = codec.decode(
+    '<svg><g id="a" transform="translate(60,40) scale(2)" font-size="20" stroke-width="4"><g id="b" transform="scale(0.5)"><text id="t" x="10" y="20">T</text><text id="explicit" x="0" y="0" font-size="16px">E</text></g></g></svg>',
+  ).document;
+  assert.equal(d.find("t").attributes()["font-size"], "20");
+  assert.equal(d.find("explicit").attributes()["font-size"], "16");
+  assert.equal(d.find("t").attributes()["stroke-width"], "4");
+  assert.equal(d.find("t").attributes().x, "70");
+  assert.equal(d.find("t").attributes().y, "60");
+});
+test("CLI scale changes documented geometric attributes while imported presentation stays explicit", () => {
+  const d = codec.decode(
+    '<svg><text id="t" x="10" y="20" font-size="16" stroke-width="2">T</text></svg>',
+  ).document;
+  d.find("t").scale(2);
+  assert.equal(d.find("t").attributes().x, "20");
+  assert.equal(d.find("t").attributes()["font-size"], "16");
+  assert.equal(d.find("t").attributes()["stroke-width"], "2");
+});

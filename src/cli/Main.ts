@@ -20,7 +20,7 @@ export class Main {
         if (output) console.log(output);
       } catch (error) {
         console.log(
-          `error: ${(error as Error).message.replace(/\r?\n/g, " ")}`,
+          `error: ${(error as Error).message.replace(/[\r\n]+/g, " ")}`,
         );
       }
       input.prompt();

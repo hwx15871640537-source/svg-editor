@@ -60,7 +60,7 @@ export class Editor {
       return this.edit(new SetCommand(a[0], a[1], a[2]));
     });
     this.register("group", "group <newGid> <id1> <id2>…", (a) => {
-      this.arity(a, 2, Infinity);
+      this.arity(a, 3, Infinity);
       return this.edit(new GroupCommand(a[0], a.slice(1)));
     });
     this.register("ungroup", "ungroup <gid>", (a) => {
@@ -121,7 +121,7 @@ export class Editor {
       if (handler.needsDocument) this.current();
       return handler.run(tokens.slice(1));
     } catch (error) {
-      return `error: ${(error instanceof Error ? error.message : String(error)).replace(/\r?\n/g, " ")}`;
+      return `error: ${(error instanceof Error ? error.message : String(error)).replace(/[\r\n]+/g, " ")}`;
     }
   }
   private current(): Document {

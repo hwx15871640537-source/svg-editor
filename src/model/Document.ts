@@ -88,7 +88,7 @@ export class Document {
   }
   regroup(id: string, ids: string[]): Group {
     this.ensureFree(id);
-    if (!ids.length) throw new Error("group requires at least one shape");
+    if (ids.length < 2) throw new Error("group requires at least two shapes");
     if (new Set(ids).size !== ids.length)
       throw new Error("duplicate group member");
     const selected = ids.map((i) => this.find(i));

@@ -391,3 +391,21 @@ test("successful overwrite keeps a byte-for-byte backup and never cleans files",
   assert.equal(readFileSync(join(dir, backups[0]), "utf8"), original);
   assert.match(readFileSync(file, "utf8"), /id="new"/);
 });
+
+test("group follows the documented minimum of two members and keeps history on failure", () => {
+  const e = ready();
+  run(e, "create g a");
+  run(e, "create g b");
+  run(e, "move a 1 2");
+  run(e, "undo");
+  const before = run(e, "tree");
+  assert.equal(run(e, "group solo a"), "error: invalid arguments");
+  assert.equal(run(e, "tree"), before);
+  assert.equal(run(e, "redo"), "g#a moved by (1,2)");
+  assert.equal(run(e, "group pair a b"), "g#pair created with 2 children");
+});
+test("errors replace lone carriage returns with spaces", () => {
+  const e = ready();
+  const response = e.execute(["show", "bad" + String.fromCharCode(13) + "id"]);
+  assert.equal(response, "error: no such shape: bad id");
+});

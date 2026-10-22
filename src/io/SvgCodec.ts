@@ -55,7 +55,11 @@ export class SvgCodec {
     for (const e of root.elements ?? []) collect(e);
     const warnings: string[] = [],
       counters = new Map<string, number>();
-    const build = (e: Element): Shape => {
+    const build = (
+      e: Element,
+      inheritedFontSize = "16",
+      inheritedStrokeWidth = "1",
+    ): Shape => {
       const attrs = Object.fromEntries(
         Object.entries(e.attributes ?? {}).map(([k, v]) => [k, String(v)]),
       );
@@ -74,19 +78,6 @@ export class SvgCodec {
         .map((c) => String(c.text ?? c.cdata ?? ""))
         .join("");
       const s = this.factory.fromAttributes(e.name!, id, attrs, content);
-      for (const c of e.elements ?? []) {
-        if (c.type === "element") {
-          if (!(s instanceof Group))
-            throw new Error(`unsupported child element in <${s.type}>`);
-          s.insert(build(c));
-        } else if (
-          c.type === "text" &&
-          s.content === undefined &&
-          String(c.text ?? "").trim()
-        )
-          throw new Error(`unexpected text in <${s.type}>`);
-      }
-      // Preserve additional XML presentation/metadata on import; CLI set remains whitelisted.
       const accepted = new Set([
         ...Object.keys(s.attributes()),
         "id",
@@ -94,7 +85,27 @@ export class SvgCodec {
       ]);
       for (const [k, v] of Object.entries(attrs))
         if (!accepted.has(k)) s.preserveAttribute(k, v);
-      if (attrs.transform) this.transform(s, attrs.transform);
+      const fontSize = attrs["font-size"] ?? inheritedFontSize;
+      const strokeWidth = attrs["stroke-width"] ?? inheritedStrokeWidth;
+      for (const c of e.elements ?? []) {
+        if (c.type === "element") {
+          if (!(s instanceof Group))
+            throw new Error(`unsupported child element in <${s.type}>`);
+          s.insert(build(c, fontSize, strokeWidth));
+        } else if (
+          c.type === "text" &&
+          s.content === undefined &&
+          String(c.text ?? "").trim()
+        )
+          throw new Error(`unexpected text in <${s.type}>`);
+      }
+      if (attrs.transform)
+        this.transform(
+          s,
+          attrs.transform,
+          inheritedFontSize,
+          inheritedStrokeWidth,
+        );
       return s;
     };
     for (const e of root.elements ?? []) {
@@ -117,7 +128,12 @@ export class SvgCodec {
         throw new Error(`unsupported SVG root attribute: ${k}`);
     return { document, warnings };
   }
-  private transform(s: Shape, source: string): void {
+  private transform(
+    s: Shape,
+    source: string,
+    inheritedFontSize = "16",
+    inheritedStrokeWidth = "1",
+  ): void {
     const operations: Array<{ factor: number; dx: number; dy: number }> = [];
     let end = 0;
     // This is an XML grammar parser, not a name-to-implementation registry.
@@ -144,9 +160,43 @@ export class SvgCodec {
       throw new Error("unsupported SVG transform");
     // SVG lists compose right-to-left; all actual shape behavior remains polymorphic.
     for (const operation of operations.reverse()) {
-      s.scale(operation.factor);
+      if (operation.factor !== 1) {
+        s.scale(operation.factor);
+        this.scalePresentation(
+          s,
+          operation.factor,
+          inheritedFontSize,
+          inheritedStrokeWidth,
+        );
+      }
       s.move(operation.dx, operation.dy);
     }
+  }
+  private scalePresentation(
+    shape: Shape,
+    factor: number,
+    inheritedFontSize: string,
+    inheritedStrokeWidth: string,
+  ): void {
+    const attrs = shape.attributes();
+    const fontSize = attrs["font-size"] ?? inheritedFontSize;
+    const strokeWidth = attrs["stroke-width"] ?? inheritedStrokeWidth;
+    const scaled = (name: string, value: string): string => {
+      if (!/^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?(?:px)?$/i.test(value.trim()))
+        throw new Error(`unsupported scaled SVG attribute: ${name}`);
+      const result = Number(value.trim().replace(/px$/i, "")) * factor;
+      if (!Number.isFinite(result)) throw new Error(`invalid number: ${name}`);
+      return String(result);
+    };
+    if (
+      shape.isContainer ||
+      shape.content !== undefined ||
+      attrs["font-size"] !== undefined
+    )
+      shape.preserveAttribute("font-size", scaled("font-size", fontSize));
+    shape.set("stroke-width", scaled("stroke-width", strokeWidth));
+    for (const child of shape.children)
+      this.scalePresentation(child, factor, fontSize, strokeWidth);
   }
   private escape(value: string, attribute = false): string {
     const escaped = value
