@@ -3,7 +3,8 @@
 权威原文：[phase_cli_1.md](phase_cli_1.md)。以下清单保留所有本阶段约束；勾选表示已实现并有验证，验证结果见 README。
 
 - [x] Git 分步真实提交，已通过 Desktop 分阶段推送至用户提供的 GitHub 仓库；截止日期已确认为 2026-10-31。
-- [ ] 最终提交、final 标签及最后一次推送的远端复核（此项仅在有实际上传证据后确认；代码验收不代替此步骤）。
+- [x] 初次交付的远端 final=b0bc7a0 已由用户截图核验，包含当时七次提交。
+- [ ] 本轮复查修订的新增提交上传与 final 更新（与此前已核验版本分开记录）。
 - [x] doc/README.md：职责与 PlantUML 图、Command 落地、依赖规则、变化点、讨论修订、一致性自查、质量保证。
 - [x] TypeScript OOP，封装字段、类层次、多态、一类一文件；禁止公共数据袋及分散类型分派。
 - [x] 仅命令分发与图形工厂允许按名字分派，在架构中列为待重构。
@@ -16,7 +17,7 @@
 - [x] 六类均支持尾部 in <containerId>；省略挂根；默认不写 fill/stroke。
 - [x] delete 子树；move 增量；scale 正 factor 同乘所有几何位置和尺寸。
 - [x] set 公共 fill/stroke/stroke-width、各类几何属性、text 的 text 内容；其余属性精确报错。
-- [x] group 多个现有图形，原相对顺序；拒绝祖先后代同时选择；ungroup 提升子节点并占据原位置，拒绝根级容器。
+- [x] group 至少两个现有图形，保持原相对顺序；拒绝祖先后代同时选择；ungroup 提升子节点并占据原位置，拒绝根级容器。
 - [x] addto 移到容器末尾，阻止循环；front/back 仅调整同级次序。
 - [x] tree [id] 内联关键几何属性、Unicode 树线；show <id> 父级与属性；help 全部语法。
 - [x] undo/redo 一条编辑一个单元；撤销结构、顺序、属性完整恢复；新编辑清 redo；显示不入栈。
@@ -35,9 +36,9 @@
 1. 跨父 group：按原文档深度优先顺序收编，在首个选中节点原父级、原位置插入新 g。同父输入顺序不改变原 z-order。
 2. front 为 SVG 绘制最前（数组末尾），back 为数组头。addto 拒绝把自身或祖先放入后代。
 3. 空历史报 nothing to undo/redo。成功 I/O 清空历史并封锁；下一次成功编辑解除封锁。失败不解锁或清历史。
-4. init 单参数只指定宽，高默认 600；canvas 修改要求宽高成对；尺寸正数，半径/宽高/stroke-width 非负，全部数字有限。
+4. group 按命令表至少接收两个成员。init 单参数只指定宽，高默认 600；canvas 修改要求宽高成对；尺寸正数，半径/宽高/stroke-width 非负，全部数字有限。
 5. 无默认保存路径报 error: no file path. use 'save <file.svg>'；save 成功记住路径。
-6. 支持本阶段六类 SVG 和 translate/scale 容器变换；其他变换或未知图形拒绝读入。读取保留额外图形属性（如 font-size/text-anchor），set 仍仅允许原文白名单。忽略注释与 XML 声明；不执行 DTD/实体扩展。
+6. 支持本阶段六类 SVG 和 translate/scale 容器变换，读入变换时同步规范化数值字号和线宽；其他变换或未知图形拒绝读入。读取保留额外图形属性（如 font-size/text-anchor），set 仍仅允许原文白名单。忽略注释与 XML 声明；不执行 DTD/实体扩展。
 7. 树列宽动态对齐（示例空格为排版）；show 根父级显示 svg；输出计数包括全部 g 和叶子，不含 svg 根。
 8. help 在无文档时可用；空行、注释不产生输出。不新增 exit 命令，以 EOF 退出。
 
