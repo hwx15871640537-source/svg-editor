@@ -2,28 +2,29 @@
 
 权威原文：[phase_cli_1.md](phase_cli_1.md)。以下清单保留所有本阶段约束；勾选表示已实现并有验证，验证结果见 README。
 
-- [ ] Git 分步真实提交、推送 GitHub/Gitee；最终提交标记 final，截止前推送（需用户提供仓库、认证及截止时间）。
-- [ ] doc/README.md：职责与 PlantUML 图、Command 落地、依赖规则、变化点、讨论修订、一致性自查、质量保证。
-- [ ] TypeScript OOP，封装字段、类层次、多态、一类一文件；禁止公共数据袋及分散类型分派。
-- [ ] 仅命令分发与图形工厂允许按名字分派，在架构中列为待重构。
-- [ ] Composite：容器/叶子统一 move、scale、set、delete；子树移动缩放递归生效。
-- [ ] REPL 提示符 svg>，逐行输入，整行 # 注释，双引号支持空格，浮点坐标。
-- [ ] id 大小写敏感且全局唯一；create/group 必填；read 缺 id 按标签名+序号补全，逐条输出指定 warning，避开所有显式 id。
-- [ ] 错误一行 error: 前缀，失败不修改文档、路径、撤销/重做状态；编辑成功摘要，显示命令直接输出。
-- [ ] init [w] [h] 默认 800×600；read <file.svg>；save [file.svg] 默认读入路径；canvas [w] [h]。
-- [ ] create 六类及全部参数：rect x y w h [fill]；circle cx cy r [fill]；ellipse cx cy rx ry [fill]；line x1 y1 x2 y2 [stroke]；text x y content；g。
-- [ ] 六类均支持尾部 in <containerId>；省略挂根；默认不写 fill/stroke。
-- [ ] delete 子树；move 增量；scale 正 factor 同乘所有几何位置和尺寸。
-- [ ] set 公共 fill/stroke/stroke-width、各类几何属性、text 的 text 内容；其余属性精确报错。
-- [ ] group 多个现有图形，原相对顺序；拒绝祖先后代同时选择；ungroup 提升子节点并占据原位置，拒绝根级容器。
-- [ ] addto 移到容器末尾，阻止循环；front/back 仅调整同级次序。
-- [ ] tree [id] 内联关键几何属性、Unicode 树线；show <id> 父级与属性；help 全部语法。
-- [ ] undo/redo 一条编辑一个单元；撤销结构、顺序、属性完整恢复；新编辑清 redo；显示不入栈。
-- [ ] init/read/save/canvas 修改后 undo/redo 精确报 io 禁止；canvas 查询及失败命令不封锁。
-- [ ] 4.2 全部本阶段错误逐字验证；未知类型含插件提示；未知属性包含属性名。
-- [ ] SVG XML read/save、嵌套、转义、自动 id、读写失败原子性、浏览器可读；data-kind=box 无插件降级普通 g。
-- [ ] 完整会话 6 与流程图 6.1 A 可回放；证明尺寸、中文 text、容器移动及撤销。
-- [ ] 单元、集成、边界及架构检查；运行结果如实记录。
+- [x] Git 分步真实提交，已通过 Desktop 分阶段推送至用户提供的 GitHub 仓库；截止日期已确认为 2026-10-31。
+- [ ] 最终提交、final 标签及最后一次推送的远端复核（此项仅在有实际上传证据后确认；代码验收不代替此步骤）。
+- [x] doc/README.md：职责与 PlantUML 图、Command 落地、依赖规则、变化点、讨论修订、一致性自查、质量保证。
+- [x] TypeScript OOP，封装字段、类层次、多态、一类一文件；禁止公共数据袋及分散类型分派。
+- [x] 仅命令分发与图形工厂允许按名字分派，在架构中列为待重构。
+- [x] Composite：容器/叶子统一 move、scale、set、delete；子树移动缩放递归生效。
+- [x] REPL 提示符 svg>，逐行输入，整行 # 注释，双引号支持空格，浮点坐标。
+- [x] id 大小写敏感且全局唯一；create/group 必填；read 缺 id 按标签名+序号补全，逐条输出指定 warning，避开所有显式 id。
+- [x] 错误一行 error: 前缀，失败不修改文档、路径、撤销/重做状态；编辑成功摘要，显示命令直接输出。
+- [x] init [w] [h] 默认 800×600；read <file.svg>；save [file.svg] 默认读入路径；canvas [w] [h]。
+- [x] create 六类及全部参数：rect x y w h [fill]；circle cx cy r [fill]；ellipse cx cy rx ry [fill]；line x1 y1 x2 y2 [stroke]；text x y content；g。
+- [x] 六类均支持尾部 in <containerId>；省略挂根；默认不写 fill/stroke。
+- [x] delete 子树；move 增量；scale 正 factor 同乘所有几何位置和尺寸。
+- [x] set 公共 fill/stroke/stroke-width、各类几何属性、text 的 text 内容；其余属性精确报错。
+- [x] group 多个现有图形，原相对顺序；拒绝祖先后代同时选择；ungroup 提升子节点并占据原位置，拒绝根级容器。
+- [x] addto 移到容器末尾，阻止循环；front/back 仅调整同级次序。
+- [x] tree [id] 内联关键几何属性、Unicode 树线；show <id> 父级与属性；help 全部语法。
+- [x] undo/redo 一条编辑一个单元；撤销结构、顺序、属性完整恢复；新编辑清 redo；显示不入栈。
+- [x] init/read/save/canvas 修改后 undo/redo 精确报 io 禁止；canvas 查询及失败命令不封锁。
+- [x] 4.2 全部本阶段错误逐字验证；未知类型含插件提示；未知属性包含属性名。
+- [x] SVG XML read/save、嵌套、转义、自动 id、读写失败原子性、浏览器可读；data-kind=box 无插件降级普通 g。
+- [x] 完整会话 6 与流程图 6.1 A 可回放；证明尺寸、中文 text、容器移动及撤销。
+- [x] 单元、集成、边界及架构检查；运行结果如实记录。
 
 ## 明确排除
 

@@ -118,40 +118,35 @@ export class SvgCodec {
     return { document, warnings };
   }
   private transform(s: Shape, source: string): void {
-    const operations: Array<{ kind: string; values: number[] }> = [];
+    const operations: Array<{ factor: number; dx: number; dy: number }> = [];
     let end = 0;
-    for (const match of source.matchAll(/(translate|scale)\s*\(([^()]*)\)/g)) {
+    // This is an XML grammar parser, not a name-to-implementation registry.
+    for (const match of source.matchAll(
+      /translate\s*\(([^()]*)\)|scale\s*\(([^()]*)\)/g,
+    )) {
       if (source.slice(end, match.index).trim().replace(/,/g, ""))
         throw new Error("unsupported SVG transform");
-      const values = match[2]
-        .trim()
-        .split(/[\s,]+/)
-        .map(Number);
-      if (
-        values.length < 1 ||
-        values.length > 2 ||
-        !values.every(Number.isFinite)
-      )
+      const translation = match[1] !== undefined,
+        body = (match[1] ?? match[2]).trim();
+      const values = body.split(/[\s,]+/).map(Number);
+      if (!body || values.length > 2 || !values.every(Number.isFinite))
         throw new Error("unsupported SVG transform");
-      operations.push({ kind: match[1], values });
+      if (!translation && values.length === 2 && values[0] !== values[1])
+        throw new Error("unsupported non-uniform SVG scale");
+      operations.push(
+        translation
+          ? { factor: 1, dx: values[0], dy: values[1] ?? 0 }
+          : { factor: values[0], dx: 0, dy: 0 },
+      );
       end = match.index! + match[0].length;
     }
     if (!operations.length || source.slice(end).trim())
       throw new Error("unsupported SVG transform");
-    // SVG transform lists compose right-to-left. Parsing delegates names through this operation registry.
-    const apply = new Map<string, (n: number[]) => void>([
-      ["translate", (n) => s.move(n[0], n[1] ?? 0)],
-      [
-        "scale",
-        (n) => {
-          if (n.length === 2 && n[0] !== n[1])
-            throw new Error("unsupported non-uniform SVG scale");
-          s.scale(n[0]);
-        },
-      ],
-    ]);
-    for (const operation of operations.reverse())
-      apply.get(operation.kind)!(operation.values);
+    // SVG lists compose right-to-left; all actual shape behavior remains polymorphic.
+    for (const operation of operations.reverse()) {
+      s.scale(operation.factor);
+      s.move(operation.dx, operation.dy);
+    }
   }
   private escape(value: string, attribute = false): string {
     const escaped = value
