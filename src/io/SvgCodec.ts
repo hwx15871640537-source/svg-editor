@@ -1,4 +1,5 @@
 import xml from 'xml-js';
+import sax from 'sax';
 import type { Element } from 'xml-js';
 import { Document } from '../model/Document.ts';
 import { Shape } from '../model/Shape.ts';
@@ -8,6 +9,10 @@ export class SvgCodec {
   private readonly factory=new ShapeFactory();
   decode(source:string):{document:Document;warnings:string[]} {
     if(/<!DOCTYPE|<!ENTITY/i.test(source))throw new Error('unsupported SVG declaration');
+    // xml-js does not finalize its SAX parser; explicitly close a strict validation pass.
+    const validator=sax.parser(true);
+    validator.onerror=error=>{throw error;};
+    validator.write(source).close();
     const parsed=xml.xml2js(source,{compact:false,captureSpacesBetweenElements:true}) as Element;
     const roots=(parsed.elements??[]).filter(e=>e.type==='element');
     if(roots.length!==1||roots[0].name!=='svg')throw new Error('expected one svg root');

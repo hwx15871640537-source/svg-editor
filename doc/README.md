@@ -61,3 +61,7 @@ io --> model
 ### 阶段 4：SVG 读写
 
 累计 9 项测试通过。真实测试发现 xml-js 的属性序列化没有转义 &，导致保存后无法读回。修订：仅用 xml-js 严格解析，输出由 SvgCodec 统一 XML 转义；增加含 &、引号、中文、前后空格的 round-trip 回归。支持 translate 与正数等比 scale，归一化到几何坐标；不支持非等比 scale/rotate 等完整 SVG 特性，明确报错。文件保存临时文件+原子重命名，避免写一半覆盖旧文件。
+
+### 阶段 5：CLI 与集成验证
+
+全部命令、双引号参数、REPL、tree/show/help 与两个原文示例完成。累计 70 项测试通过。新增测试发现 xml-js 即使有严格标记也未关闭 SAX 流；仅调用 close 仍不足（SAX onerror 默认不抛出）。修订为明确注册抛错回调、write 后 close，未闭合文档现在被拒绝，已有文档与 redo 保持不变。另一个引号测试错误来自测试字符串本身丢失反斜线，改 String.raw 后通过。已真实执行 examples/flowchart.txt，保存得到 8 元素 SVG。

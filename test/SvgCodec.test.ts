@@ -20,5 +20,5 @@ test('translate and scale normalize nested groups without double-transform',()=>
  assert.equal(codec.encode(codec.decode(codec.encode(d)).document),codec.encode(d));
 });
 test('reject malformed, duplicate, unsupported and unsafe XML',()=>{
- for(const s of ['<svg><g></svg>','<svg/><svg/>','<svg><rect id="a"/><circle id="a"/></svg>','<!DOCTYPE svg><svg/>','<svg><path id="a"/></svg>','<svg><g id="a" transform="rotate(30)"/></svg>','<svg width="0"/>','<svg><rect id="a" onclick="x"/></svg>'])assert.throws(()=>codec.decode(s),s);
+ for(const s of ['<svg><rect', '<svg>', '<svg><g></svg>','<svg/><svg/>','<svg><rect id="a"/><circle id="a"/></svg>','<!DOCTYPE svg><svg/>','<svg><path id="a"/></svg>','<svg><g id="a" transform="rotate(30)"/></svg>','<svg width="0"/>','<svg><rect id="a" onclick="x"/></svg>'])assert.throws(()=>codec.decode(s),s);
 });

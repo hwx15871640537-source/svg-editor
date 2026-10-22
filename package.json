@@ -1,7 +1,23 @@
 {
-  "name": "phase1-svg-editor", "version": "0.1.0", "private": true, "type": "module",
-  "engines": {"node": ">=24.0.0"},
-  "scripts": {"cli": "node src/cli/Main.ts", "test": "node --test test/*.test.ts", "check": "tsc --noEmit"},
-  "dependencies": {"xml-js": "1.6.11"},
-  "devDependencies": {"typescript": "5.9.3", "@types/node": "24.10.0"}
+  "name": "phase1-svg-editor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "cli": "node src/cli/Main.ts",
+    "test": "node --test test/*.test.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "sax": "^1.6.0",
+    "xml-js": "1.6.11"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.0",
+    "@types/sax": "^1.2.7",
+    "typescript": "5.9.3"
+  }
 }
