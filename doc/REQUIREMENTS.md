@@ -36,6 +36,10 @@
 3. 空历史报 nothing to undo/redo。成功 I/O 清空历史并封锁；下一次成功编辑解除封锁。失败不解锁或清历史。
 4. init 单参数只指定宽，高默认 600；canvas 修改要求宽高成对；尺寸正数，半径/宽高/stroke-width 非负，全部数字有限。
 5. 无默认保存路径报 error: no file path. use 'save <file.svg>'；save 成功记住路径。
-6. 支持本阶段六类 SVG 和 translate/scale 容器变换；其他变换或未知图形拒绝读入，避免静默损坏。忽略注释与 XML 声明；不执行 DTD/实体扩展。
+6. 支持本阶段六类 SVG 和 translate/scale 容器变换；其他变换或未知图形拒绝读入。读取保留额外图形属性（如 font-size/text-anchor），set 仍仅允许原文白名单。忽略注释与 XML 声明；不执行 DTD/实体扩展。
 7. 树列宽动态对齐（示例空格为排版）；show 根父级显示 svg；输出计数包括全部 g 和叶子，不含 svg 根。
 8. help 在无文档时可用；空行、注释不产生输出。不新增 exit 命令，以 EOF 退出。
+
+## 用户追加约束
+
+用户明确禁止删除本地文件（尤其系统文件）。实现与验证均不执行文件/目录清理：test 工件保存在工程 work/test-artifacts；保存覆盖前保留唯一 .bak 备份；写入失败的 .tmp 保留。SVG 的 delete 命令仅更改文档树，可撤销。

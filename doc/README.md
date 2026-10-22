@@ -65,3 +65,9 @@ io --> model
 ### 阶段 5：CLI 与集成验证
 
 全部命令、双引号参数、REPL、tree/show/help 与两个原文示例完成。累计 70 项测试通过。新增测试发现 xml-js 即使有严格标记也未关闭 SAX 流；仅调用 close 仍不足（SAX onerror 默认不抛出）。修订为明确注册抛错回调、write 后 close，未闭合文档现在被拒绝，已有文档与 redo 保持不变。另一个引号测试错误来自测试字符串本身丢失反斜线，改 String.raw 后通过。已真实执行 examples/flowchart.txt，保存得到 8 元素 SVG。
+
+### 阶段 6：一致性与文件保护
+
+累计 76 项测试通过。新增 AST 检查验证所有生产代码依赖、一类一文件、字段封装及无 switch 分派。补充原文背景示例字体/对齐属性的保留、树子树列宽、跨父分组顺序、front/back 真正 z-order、溢出失败原子性与覆盖前备份测试。按用户新增不可删除本地文件约束，去除 FileStore 的临时文件删除和测试清理动作，保留工件并在覆盖前保存原文件备份。统一生产代码格式以便人工阅读。
+
+远程证据：用户明确提供 https://github.com/hwx15871640537-source/svg-editor 并确认 Desktop 推送成功；本地 origin/main=37bf390，reflog 显示 update by push（此前 fbc6315 也有独立推送记录）。命令行认证不可用，不声称命令行成功推送。剩余提交仍需 Desktop 推送。
