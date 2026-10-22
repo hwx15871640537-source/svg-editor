@@ -49,3 +49,7 @@ io --> model
 ## 一致性自查与质量保证
 
 完成实现后补充目录、依赖抽查、测试数量及实际运行结果。远程仓库与截止时间尚未提供，当前不声称已推送、不声称 final 截止合规。
+
+### 阶段 2：内核
+
+实现 Shape + Rect/Circle/Ellipse/Line/Text/Group 与 Document、ShapeFactory。3 项内核测试通过，TypeScript 严格检查通过。安装工具首次试图写默认用户缓存被沙箱阻止，改为工程 work 缓存后成功，未修改用户目录权限。
