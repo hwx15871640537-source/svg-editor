@@ -37,7 +37,7 @@
 2. front 为 SVG 绘制最前（数组末尾），back 为数组头。addto 拒绝把自身或祖先放入后代。
 3. 空历史报 nothing to undo/redo。成功 I/O 清空历史并封锁；下一次成功编辑解除封锁。失败不解锁或清历史。
 4. group 按命令表至少接收两个成员。init 单参数只指定宽，高默认 600；canvas 修改要求宽高成对；尺寸正数，半径/宽高/stroke-width 非负，全部数字有限。
-5. 无默认保存路径报 error: no file path. use 'save <file.svg>'；save 成功记住路径。
+5. 无默认保存路径报 error: no file path. use 'save <file.svg>'；read 路径持续作为默认目标；另存保留该目标。init 后首次显式 save 建立默认路径。双引号中的反斜线通常按字面保留，双反斜线和反斜线加引号用于转义。
 6. 支持本阶段六类 SVG 和 translate/scale 容器变换，读入变换时同步规范化数值字号和线宽；其他变换或未知图形拒绝读入。读取保留额外图形属性（如 font-size/text-anchor），set 仍仅允许原文白名单。忽略注释与 XML 声明；不执行 DTD/实体扩展。
 7. 树列宽动态对齐（示例空格为排版）；show 根父级显示 svg；输出计数包括全部 g 和叶子，不含 svg 根。
 8. help 在无文档时可用；空行、注释不产生输出。不新增 exit 命令，以 EOF 退出。
