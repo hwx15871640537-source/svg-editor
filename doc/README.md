@@ -53,3 +53,7 @@ io --> model
 ### 阶段 2：内核
 
 实现 Shape + Rect/Circle/Ellipse/Line/Text/Group 与 Document、ShapeFactory。3 项内核测试通过，TypeScript 严格检查通过。安装工具首次试图写默认用户缓存被沙箱阻止，改为工程 work 缓存后成功，未修改用户目录权限。
+
+### 阶段 3：Command 与历史
+
+每个编辑操作均有 Command 子类（front/back 共享 ReorderCommand），History 只在 execute 成功后记录。5 项累计测试与类型检查通过，包括分组单步撤销、浮点精确还原、失败不清 redo、I/O 屏障及成功编辑解锁。用户说明截止日期 10 月 31 日（未给具体时刻），目标当天完成；已指导添加现有仓库并发布，等待实际远程配置。
