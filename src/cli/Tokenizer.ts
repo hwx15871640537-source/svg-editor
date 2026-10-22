@@ -11,16 +11,13 @@ export class Tokenizer {
         quoted = !quoted;
         started = true;
       } else if (c === "\\" && quoted) {
-        const next = line[++i];
-        if (next === undefined) throw new Error("unterminated quoted argument");
-        token +=
-          next === "n"
-            ? "\n"
-            : next === "t"
-              ? "\t"
-              : next === "r"
-                ? "\r"
-                : next;
+        const next = line[i + 1];
+        if (next === '"' || next === "\\") {
+          token += next;
+          i++;
+        } else {
+          token += c;
+        }
         started = true;
       } else if (/\s/.test(c) && !quoted) {
         if (started) {

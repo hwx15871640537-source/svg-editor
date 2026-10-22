@@ -23,3 +23,22 @@ test("double quotes, empty content, colors and whole-line comments", () => {
   ]);
   assert.throws(() => t.parse('set t text "unfinished'), /unterminated/);
 });
+
+test("quoted literal backslashes survive paths and mathematical text", () => {
+  assert.deepEqual(t.parse(String.raw`read "C:\new\test.svg"`), [
+    "read",
+    String.raw`C:\new\test.svg`,
+  ]);
+  assert.deepEqual(t.parse(String.raw`set t text "\alpha + \beta"`), [
+    "set",
+    "t",
+    "text",
+    String.raw`\alpha + \beta`,
+  ]);
+  assert.deepEqual(t.parse(String.raw`set t text "a \\ b"`), [
+    "set",
+    "t",
+    "text",
+    String.raw`a \ b`,
+  ]);
+});

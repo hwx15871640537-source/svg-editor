@@ -172,7 +172,7 @@ export class Editor {
       path = a[0] ?? this.path;
     if (!path) throw new Error("no file path. use 'save <file.svg>'");
     this.files.write(path, this.codec.encode(d));
-    this.path = path;
+    this.path ??= path;
     this.history.barrier();
     return `saved to ${path} (${d.all().length} elements)`;
   }

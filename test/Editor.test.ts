@@ -409,3 +409,61 @@ test("errors replace lone carriage returns with spaces", () => {
   const response = e.execute(["show", "bad" + String.fromCharCode(13) + "id"]);
   assert.equal(response, "error: no such shape: bad id");
 });
+
+test("save-as preserves the path established by read", () => {
+  const dir = mkdtempSync(join(artifactPath, "svg-default-path-"));
+  const source = join(dir, "source.svg"),
+    copy = join(dir, "copy.svg");
+  writeFileSync(
+    source,
+    '<svg width="20" height="30"><rect id="r" x="1" y="2" width="3" height="4"/></svg>',
+  );
+  const e = new Editor();
+  run(e, `read "${source}"`);
+  run(e, `save "${copy}"`);
+  run(e, "move r 10 20");
+  assert.equal(run(e, "save"), `saved to ${source} (1 elements)`);
+  assert.match(readFileSync(source, "utf8"), /x="11" y="22"/);
+  assert.match(readFileSync(copy, "utf8"), /x="1" y="2"/);
+  assert.equal(run(e, "undo"), "error: undo not allowed after io command");
+});
+
+for (const operation of ["init", "read", "save", "canvas"])
+  test(`successful ${operation} blocks both history directions until an edit succeeds`, () => {
+    const dir = mkdtempSync(join(artifactPath, "svg-barrier-"));
+    const path = join(dir, "input.svg");
+    writeFileSync(path, '<svg width="100" height="100"><g id="loaded"/></svg>');
+    const e = ready();
+    run(e, "create g previous");
+    const command =
+      operation === "read" || operation === "save"
+        ? `${operation} "${path}"`
+        : operation === "canvas"
+          ? "canvas 200 300"
+          : "init";
+    assert.ok(!run(e, command).startsWith("error:"));
+    for (const direction of ["undo", "redo"])
+      assert.equal(
+        run(e, direction),
+        "error: undo not allowed after io command",
+      );
+    assert.equal(run(e, "delete missing"), "error: no such shape: missing");
+    assert.equal(run(e, "undo"), "error: undo not allowed after io command");
+    for (const query of ["canvas", "tree", "help"]) run(e, query);
+    assert.equal(run(e, "redo"), "error: undo not allowed after io command");
+    assert.equal(run(e, "create g next"), "g#next created");
+    assert.equal(run(e, "undo"), "g#next deleted");
+    assert.equal(run(e, "redo"), "g#next created");
+  });
+
+for (const command of ["init -1 2", "canvas 10 -1", "read", "save a b"])
+  test(`failed document command preserves a redo branch: ${command}`, () => {
+    const e = ready();
+    run(e, "create circle C 10 20 3");
+    run(e, "move C 1 2");
+    run(e, "undo");
+    const before = run(e, "tree");
+    assert.match(run(e, command), /^error:/);
+    assert.equal(run(e, "tree"), before);
+    assert.equal(run(e, "redo"), "circle#C moved to (11,22)");
+  });
